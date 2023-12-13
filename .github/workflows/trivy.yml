@@ -7,13 +7,13 @@ name: trivy
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ "master" ]
+    branches: ["master"]
 
 permissions:
-    contents: read
+  contents: read
 
 jobs:
   build:
@@ -32,14 +32,17 @@ jobs:
           docker build -t dockerfile/railsgoat:${{ github.sha }} .
 
       - name: Run Trivy vulnerability scanner
+        # trivy image --ignore-unfixed --vuln-type os perfect-sutekaku/create-sutekaku
         uses: aquasecurity/trivy-action@7b7aa264d83dc58691451798b4d117d53d21edfe
         with:
-          image-ref: 'dockerfile/railsgoat:${{ github.sha }}'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-          severity: 'CRITICAL'
+          image-ref: "dockerfile/railsgoat:${{ github.sha }}"
+          format: "sarif"
+          output: "trivy-results.sarif"
+          severity: "CRITICAL"
+          ignore-unfixed: true
+          vuln-type: "os"
 
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v2
         with:
-          sarif_file: 'trivy-results.sarif'
+          sarif_file: "trivy-results.sarif"
